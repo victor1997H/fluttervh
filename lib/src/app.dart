@@ -205,29 +205,32 @@ class _HomepageState extends State<Homepage> {
                         ),
 
                         // Register
-                        Column(
-                          children: [
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                shape: const CircleBorder(),
-                                padding: const EdgeInsets.all(24),
-                                backgroundColor:
-                                    const Color.fromARGB(255, 113, 191, 117),
-                              ),
-                              onPressed: () {},
-                              child: const Icon(
-                                Icons.app_registration,
-                                size: 32,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              "REGISTRAR RUTA",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
+Column(
+  children: [
+    ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        shape: const CircleBorder(),
+        padding: const EdgeInsets.all(24),
+        backgroundColor: const Color.fromARGB(255, 113, 191, 117),
+      ),
+      onPressed: () {
+        // Navegar a la pantalla de registro
+        Navigator.pushNamed(context, '/registro');
+      },
+      child: const Icon(
+        Icons.app_registration,
+        size: 32,
+        color: Colors.white,
+      ),
+    ),
+    const SizedBox(height: 8),
+    const Text(
+      "REGISTRAR RUTA",
+      style: TextStyle(fontWeight: FontWeight.bold),
+    ),
+  ],
+),
+
 
                         // Search
                         Column(
