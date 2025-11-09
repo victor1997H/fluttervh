@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';   // ✔ REEMPLAZO CORRECTO
 
 class GuiasPage extends StatelessWidget {
   const GuiasPage({super.key});
@@ -11,18 +13,21 @@ class GuiasPage extends StatelessWidget {
         'experiencia': '5 años de experiencia en rutas de montaña.',
         'imagen': 'images/guia1.jpg',
         'rating': 4.9,
+        'id': 'guia_001',
       },
       {
         'nombre': 'Lucía Torres',
         'experiencia': 'Especialista en turismo ecológico y aventura.',
         'imagen': 'images/guia2.jpg',
         'rating': 4.8,
+        'id': 'guia_002',
       },
       {
         'nombre': 'Andrés Paredes',
         'experiencia': 'Guía certificado en recorridos extremos y rafting.',
         'imagen': 'images/guia3.jpg',
         'rating': 5.0,
+        'id': 'guia_003',
       },
     ];
 
@@ -54,11 +59,18 @@ class GuiasPage extends StatelessWidget {
           },
         ),
       ),
+
+      // 🟣 BOTÓN PARA ESCANEAR QR
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: const Color(0xFF2ECC71),
-        onPressed: () {},
-        icon: const Icon(Icons.chat_bubble_outline),
-        label: const Text('Contactar Guía'),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ScanQRPage()),
+          );
+        },
+        icon: const Icon(Icons.qr_code_scanner),
+        label: const Text('Escanear QR'),
       ),
     );
   }
@@ -74,7 +86,6 @@ class GuiasPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Imagen circular centrada
             Container(
               width: 120,
               height: 120,
@@ -94,10 +105,7 @@ class GuiasPage extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(height: 15),
-
-            // Nombre del guía
             Text(
               guia['nombre'],
               style: const TextStyle(
@@ -106,25 +114,20 @@ class GuiasPage extends StatelessWidget {
                 color: Color(0xFF145A32),
               ),
             ),
-
             const SizedBox(height: 8),
-
-            // Experiencia
             Text(
               guia['experiencia'],
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 15, color: Colors.black87),
             ),
-
             const SizedBox(height: 10),
-
-            // Calificación (estrellas)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ...List.generate(
                   guia['rating'].floor(),
-                  (index) => const Icon(Icons.star, color: Colors.amber, size: 22),
+                  (index) =>
+                      const Icon(Icons.star, color: Colors.amber, size: 22),
                 ),
                 if (guia['rating'] % 1 != 0)
                   const Icon(Icons.star_half, color: Colors.amber, size: 22),
@@ -138,8 +141,76 @@ class GuiasPage extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 20),
+
+            // QR
+            QrImageView(
+              data:
+                  "${guia['id']} - ${guia['nombre']} - ${guia['experiencia']}",
+              version: QrVersions.auto,
+              size: 150,
+            ),
+            const SizedBox(height: 5),
+            const Text(
+              "Escanea para ver detalles",
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            )
           ],
         ),
+      ),
+    );
+  }
+}
+
+// 🟣🟣🟣 PANTALLA PARA ESCANEAR QR — FUNCIONAL EN WEB, ANDROID, iOS
+class ScanQRPage extends StatefulWidget {
+  const ScanQRPage({super.key});
+
+  @override
+  State<ScanQRPage> createState() => _ScanQRPageState();
+}
+
+class _ScanQRPageState extends State<ScanQRPage> {
+  bool hasScanned = false;
+  String scannedData = "";
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Escanear Código QR")),
+      body: Column(
+        children: [
+          Expanded(
+            flex: 4,
+            child: MobileScanner(
+              onDetect: (capture) {
+                if (hasScanned) return;
+
+                final barcode = capture.barcodes.first;
+                final String? code = barcode.rawValue;
+
+                if (code != null) {
+                  setState(() {
+                    hasScanned = true;
+                    scannedData = code;
+                  });
+                }
+              },
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Center(
+              child: Text(
+                scannedData.isEmpty
+                    ? "Apunta al código QR"
+                    : "Datos encontrados:\n$scannedData",
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 18),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

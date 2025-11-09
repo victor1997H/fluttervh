@@ -5,6 +5,7 @@ import 'pantallas/inicio.dart';
 import 'pantallas/guias.dart';
 import 'pantallas/clima.dart';
 import 'pantallas/permisos.dart';
+import 'pantallas/ubicacion.dart';
 
 void main() {
   runApp(const MyApp());

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:paginasconrutas/pantallas/ubicacion.dart'; // 🟢 agregado
 
 class ClimaPage extends StatelessWidget {
   const ClimaPage({super.key});
@@ -76,7 +77,17 @@ class ClimaPage extends StatelessWidget {
           itemCount: climas.length,
           itemBuilder: (context, index) {
             final clima = climas[index];
-            return _buildClimaCard(clima);
+            return GestureDetector( // 🟢 agregado
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UbicacionPage(lugar: clima['lugar']), // 🟢 agregado
+                  ),
+                );
+              },
+              child: _buildClimaCard(clima),
+            );
           },
         ),
       ),
