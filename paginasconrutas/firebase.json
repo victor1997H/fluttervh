@@ -1,0 +1,39 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "aventura360",
+          "appId": "1:950677884388:android:d6c42d2d4d816fadf64bf1",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "aventura360",
+          "configurations": {
+            "android": "1:950677884388:android:d6c42d2d4d816fadf64bf1",
+            "ios": "1:950677884388:ios:b2f0df635051e61cf64bf1",
+            "macos": "1:950677884388:ios:b2f0df635051e61cf64bf1",
+            "web": "1:950677884388:web:5f1d3f3b1801e27df64bf1",
+            "windows": "1:950677884388:web:206c1835b8563971f64bf1"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

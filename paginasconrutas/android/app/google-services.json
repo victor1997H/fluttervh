@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "950677884388",
+    "project_id": "aventura360",
+    "storage_bucket": "aventura360.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:950677884388:android:d6c42d2d4d816fadf64bf1",
+        "android_client_info": {
+          "package_name": "com.example.paginasconrutas"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAv1-b8MeFdPogfhqOkoLKd9_DQww0q9Ow"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

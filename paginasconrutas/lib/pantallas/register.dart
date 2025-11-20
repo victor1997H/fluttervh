@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -10,6 +12,62 @@ class RegisterPage extends StatelessWidget {
     final correoController = TextEditingController();
     final contrasenaController = TextEditingController();
     final confirmarController = TextEditingController();
+
+    Future<void> registrarUsuario() async {
+      final nombre = nombreController.text.trim();
+      final usuario = usuarioController.text.trim();
+      final correo = correoController.text.trim();
+      final contrasena = contrasenaController.text.trim();
+      final confirmar = confirmarController.text.trim();
+
+      if (nombre.isEmpty ||
+          usuario.isEmpty ||
+          correo.isEmpty ||
+          contrasena.isEmpty ||
+          confirmar.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Completa todos los campos")),
+        );
+        return;
+      }
+
+      if (contrasena != confirmar) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Las contraseñas no coinciden")),
+        );
+        return;
+      }
+
+      try {
+        // Crear usuario en Firebase Auth
+        UserCredential cred = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+                email: correo, password: contrasena);
+
+        // Guardar datos adicionales en Firestore
+        await FirebaseFirestore.instance
+            .collection('usuarios')
+            .doc(cred.user!.uid)
+            .set({
+          'nombre': nombre,
+          'usuario': usuario,
+          'correo': correo,
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Usuario registrado correctamente'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        Navigator.pushNamed(context, '/');
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error: $e")),
+        );
+      }
+    }
 
     return Scaffold(
       backgroundColor: const Color(0xFFEFF7EF),
@@ -31,7 +89,7 @@ class RegisterPage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 40),
                 child: Column(
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       radius: 50,
                       backgroundImage: AssetImage('images/trail.jpg'),
                     ),
@@ -168,16 +226,7 @@ class RegisterPage extends StatelessWidget {
                         iconSize: 60,
                         color: const Color(0xFF1E8449),
                         icon: const Icon(Icons.check_circle_outline),
-                        onPressed: () {
-                          // Aquí se podría guardar el registro o validar
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Usuario registrado correctamente'),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                          Navigator.pushNamed(context, '/');
-                        },
+                        onPressed: registrarUsuario, // 🔥 Aquí llama Firebase
                       ),
                       const Text(
                         'GUARDAR',
@@ -187,7 +236,7 @@ class RegisterPage extends StatelessWidget {
                   ),
                   const SizedBox(width: 60),
 
-                  // Botón Volver al Login
+                  // Botón Volver
                   Column(
                     children: [
                       IconButton(

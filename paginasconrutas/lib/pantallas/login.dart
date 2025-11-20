@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -8,12 +9,48 @@ class Login extends StatelessWidget {
     final usuarioController = TextEditingController();
     final contrasenaController = TextEditingController();
 
+    Future<void> login() async {
+      final email = usuarioController.text.trim();
+      final pass = contrasenaController.text.trim();
+
+      if (email.isEmpty || pass.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Ingresa tu correo y contraseña")),
+        );
+        return;
+      }
+
+      try {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: pass,
+        );
+
+        Navigator.pushNamed(context, '/inicio');
+
+      } on FirebaseAuthException catch (e) {
+        String mensaje = switch (e.code) {
+          'user-not-found' => "El usuario no existe. Regístrate primero.",
+          'wrong-password' => "Contraseña incorrecta.",
+          'invalid-email' => "Correo inválido.",
+          'user-disabled' => "El usuario está deshabilitado.",
+          _ => "Error: ${e.message}",
+        };
+
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(mensaje)));
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error: ${e.toString()}")),
+        );
+      }
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFEFF7EF),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Encabezado
               Container(
@@ -27,13 +64,13 @@ class Login extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 40),
                 child: Column(
-                  children: [
-                    const CircleAvatar(
+                  children: const [
+                    CircleAvatar(
                       radius: 50,
                       backgroundImage: AssetImage('images/trail.jpg'),
                     ),
-                    const SizedBox(height: 10),
-                    const Text(
+                    SizedBox(height: 10),
+                    Text(
                       'Aventura360',
                       style: TextStyle(
                         fontSize: 26,
@@ -44,6 +81,7 @@ class Login extends StatelessWidget {
                   ],
                 ),
               ),
+
               const SizedBox(height: 30),
 
               const Text(
@@ -54,16 +92,18 @@ class Login extends StatelessWidget {
                   color: Color(0xFF145A32),
                 ),
               ),
+
               const SizedBox(height: 20),
 
-              // Campo Usuario
+              // Correo
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: TextField(
                   controller: usuarioController,
+                  keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.person_outline),
-                    labelText: 'Usuario',
+                    prefixIcon: const Icon(Icons.email_outlined),
+                    labelText: 'Correo electrónico',
                     filled: true,
                     fillColor: const Color(0xFFF0F8F0),
                     border: OutlineInputBorder(
@@ -73,9 +113,10 @@ class Login extends StatelessWidget {
                   ),
                 ),
               ),
+
               const SizedBox(height: 15),
 
-              // Campo Contraseña
+              // Contraseña
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: TextField(
@@ -96,49 +137,36 @@ class Login extends StatelessWidget {
 
               const SizedBox(height: 30),
 
-              // Botones
+              // BOTONES
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Botón Ingresar
                   Column(
                     children: [
                       IconButton(
                         iconSize: 60,
                         color: const Color(0xFF1E8449),
                         icon: const Icon(Icons.login),
-                        onPressed: () {
-                          // ✅ Navegar correctamente a la pantalla de inicio
-                          Navigator.pushNamed(context, '/inicio');
-                        },
+                        onPressed: login,
                       ),
-                      const Text(
-                        'INGRESAR',
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
+                      const Text('INGRESAR'),
                     ],
                   ),
                   const SizedBox(width: 60),
-
-                  // Botón Registrar
                   Column(
                     children: [
                       IconButton(
                         iconSize: 60,
                         color: const Color(0xFF27AE60),
                         icon: const Icon(Icons.app_registration),
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/register');
-                        },
+                        onPressed: () => Navigator.pushNamed(context, '/register'),
                       ),
-                      const Text(
-                        'REGISTRAR',
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
+                      const Text('REGISTRAR'),
                     ],
                   ),
                 ],
               ),
+
               const SizedBox(height: 30),
             ],
           ),
